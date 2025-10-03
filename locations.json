@@ -1,0 +1,102 @@
+{
+    "cenote": [
+        {
+            "name": "Cenote Ik Kil",
+            "category": "cenote",
+            "lat": 20.6639,
+            "lng": -88.5539,
+            "description": "Un famoso cenote abierto cerca de Chichén Itzá, ideal para nadar en sus aguas cristalinas.",
+            "imageUrl": "https://placehold.co/300x200/3498db/ffffff?text=Cenote+Ik+Kil",
+            "url": "#"
+        },
+        {
+            "name": "Cenote Suytun",
+            "category": "cenote",
+            "lat": 20.6869,
+            "lng": -88.1969,
+            "description": "Conocido por su plataforma de piedra en el centro, es un cenote de cueva espectacular.",
+            "imageUrl": "https://placehold.co/300x200/3498db/ffffff?text=Cenote+Suytun",
+            "url": "#"
+        },
+        {
+            "name": "Cenote Elepetén / Ojo de Agua",
+            "category": "cenote",
+            "lat": 21.403337,
+            "lng": -88.82673,
+            "description": "Cenote abierto, magnifico para toda la familia",
+            "imageUrl": "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "url": "https://www.facebook.com/profile.php?id=61577983337128"
+        }
+    ],
+    "arqueologia": [
+        {
+            "name": "Chichén Itzá",
+            "category": "arqueologia",
+            "lat": 20.6843,
+            "lng": -88.5678,
+            "description": "Una de las Nuevas Siete Maravillas del Mundo y un sitio emblemático de la civilización maya.",
+            "imageUrl": "https://placehold.co/300x200/f39c12/ffffff?text=Chichén+Itzá",
+            "url": "#"
+        },
+        {
+            "name": "Uxmal",
+            "category": "arqueologia",
+            "lat": 20.3596,
+            "lng": -89.7713,
+            "description": "Impresionante zona arqueológica de estilo Puuc, con la Pirámide del Adivino como principal atractivo.",
+            "imageUrl": "https://placehold.co/300x200/f39c12/ffffff?text=Uxmal",
+            "url": "#"
+        }
+    ],
+    "hacienda": [
+        {
+            "name": "Hacienda Yaxcopoil",
+            "category": "hacienda",
+            "lat": 20.7025,
+            "lng": -89.7567,
+            "description": "Una hacienda henequenera que conserva su maquinaria y mobiliario original, un viaje al pasado.",
+            "imageUrl": "https://placehold.co/300x200/2ecc71/ffffff?text=Hacienda+Yaxcopoil",
+            "url": "#"
+        },
+        {
+            "name": "Hacienda Sotuta de Peón",
+            "category": "hacienda",
+            "lat": 20.7511,
+            "lng": -89.5858,
+            "description": "Hacienda viva que muestra el proceso del henequén, con un hermoso cenote para refrescarse.",
+            "imageUrl": "https://placehold.co/300x200/2ecc71/ffffff?text=Sotuta+de+Peón",
+            "url": "#"
+        }
+    ],
+    "playa": [
+        {
+            "name": "Progreso",
+            "category": "playa",
+            "lat": 21.2833,
+            "lng": -89.6667,
+            "description": "Principal puerto de Yucatán, famoso por su malecón y su muelle, el más largo del mundo.",
+            "imageUrl": "https://placehold.co/300x200/16a085/ffffff?text=Progreso",
+            "url": "#"
+        },
+        {
+            "name": "Playa Tortuguita",
+            "category": "playa",
+            "lat": 21.35837007967074,
+            "lng": -89.10677298857001,
+            "description": "Playa para hacer campin",
+            "imageUrl": "https://images.unsplash.com/photo-1590523741831-ab7e8b8f9c7f?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+            "url": "https://www.gamapeninsularelectrica.com/"
+        }
+    ],
+    "catedral": [
+        {
+            "name": "Catedral de San Ildefonso",
+            "category": "catedral",
+            "lat": 20.9674,
+            "lng": -89.6228,
+            "description": "La catedral más antigua de México continental, ubicada en el corazón de Mérida.",
+            "imageUrl": "https://placehold.co/300x200/8e44ad/ffffff?text=Catedral",
+            "url": "#"
+        }
+    ]
+}

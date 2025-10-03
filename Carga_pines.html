@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cargar Nuevos Pines</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        .button-group { display: flex; justify-content: space-between; margin-top: 20px; }
+        button { padding: 10px 15px; color: white; border: none; cursor: pointer; border-radius: 4px; }
+        #submitBtn { background-color: #007bff; }
+        #downloadBtn { background-color: #28a745; }
+        #downloadBtn:disabled { background-color: #a5d6a7; cursor: not-allowed; }
+        #queued-locations { margin-top: 20px; }
+        #queued-list { list-style-type: none; padding: 0; }
+        #queued-list li { background: #e9ecef; padding: 10px; border-radius: 4px; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Añadir Nueva Ubicación</h1>
+    <form id="locationForm">
+        <div class="form-group">
+            <label for="category">Categoría</label>
+            <select id="category" name="category" required></select>
+            <input type="text" id="newCategory" name="newCategory" placeholder="O escribe una nueva categoría" style="display:none; margin-top: 5px;">
+        </div>
+        <div class="form-group">
+            <label for="name">Nombre</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="lat">Latitud</label>
+            <input type="number" step="any" id="lat" name="lat" required>
+        </div>
+        <div class="form-group">
+            <label for="lng">Longitud</label>
+            <input type="number" step="any" id="lng" name="lng" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+        <div class="form-group">
+            <label for="imageUrl">URL de la Imagen</label>
+            <input type="url" id="imageUrl" name="imageUrl" required>
+        </div>
+        <div class="form-group">
+            <label for="url">URL de Destino</label>
+            <input type="url" id="url" name="url" value="#" required>
+        </div>
+        <div class="button-group">
+            <button type="submit" id="submitBtn">Añadir a la lista</button>
+            <button type="button" id="downloadBtn" disabled>Finalizar y Descargar JSON</button>
+        </div>
+    </form>
+
+    <div id="queued-locations">
+        <h2>Pines en cola</h2>
+        <ul id="queued-list"></ul>
+    </div>
+</div>
+
+<script>
+// Contenido original de locations.json
+const locationsData = {
+    "cenote": [
+        { "name": "Cenote Ik Kil", "category": "cenote", "lat": 20.6639, "lng": -88.5539, "description": "Un famoso cenote abierto cerca de Chichén Itzá, ideal para nadar en sus aguas cristalinas.", "imageUrl": "https://placehold.co/300x200/3498db/ffffff?text=Cenote+Ik+Kil", "url": "#" },
+        { "name": "Cenote Suytun", "category": "cenote", "lat": 20.6869, "lng": -88.1969, "description": "Conocido por su plataforma de piedra en el centro, es un cenote de cueva espectacular.", "imageUrl": "https://placehold.co/300x200/3498db/ffffff?text=Cenote+Suytun", "url": "#" }
+    ],
+    "arqueologia": [
+        { "name": "Chichén Itzá", "category": "arqueologia", "lat": 20.6843, "lng": -88.5678, "description": "Una de las Nuevas Siete Maravillas del Mundo y un sitio emblemático de la civilización maya.", "imageUrl": "https://placehold.co/300x200/f39c12/ffffff?text=Chichén+Itzá", "url": "#" },
+        { "name": "Uxmal", "category": "arqueologia", "lat": 20.3596, "lng": -89.7713, "description": "Impresionante zona arqueológica de estilo Puuc, con la Pirámide del Adivino como principal atractivo.", "imageUrl": "https://placehold.co/300x200/f39c12/ffffff?text=Uxmal", "url": "#" }
+    ],
+    "hacienda": [
+        { "name": "Hacienda Yaxcopoil", "category": "hacienda", "lat": 20.7025, "lng": -89.7567, "description": "Una hacienda henequenera que conserva su maquinaria y mobiliario original, un viaje al pasado.", "imageUrl": "https://placehold.co/300x200/2ecc71/ffffff?text=Hacienda+Yaxcopoil", "url": "#" },
+        { "name": "Hacienda Sotuta de Peón", "category": "hacienda", "lat": 20.7511, "lng": -89.5858, "description": "Hacienda viva que muestra el proceso del henequén, con un hermoso cenote para refrescarse.", "imageUrl": "https://placehold.co/300x200/2ecc71/ffffff?text=Sotuta+de+Peón", "url": "#" }
+    ],
+    "playa": [
+        { "name": "Progreso", "category": "playa", "lat": 21.2833, "lng": -89.6667, "description": "Principal puerto de Yucatán, famoso por su malecón y su muelle, el más largo del mundo.", "imageUrl": "https://placehold.co/300x200/16a085/ffffff?text=Progreso", "url": "#" }
+    ],
+    "catedral": [
+        { "name": "Catedral de San Ildefonso", "category": "catedral", "lat": 20.9674, "lng": -89.6228, "description": "La catedral más antigua de México continental, ubicada en el corazón de Mérida.", "imageUrl": "https://placehold.co/300x200/8e44ad/ffffff?text=Catedral", "url": "#" }
+    ]
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('category');
+    const newCategoryInput = document.getElementById('newCategory');
+    const form = document.getElementById('locationForm');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const queuedList = document.getElementById('queued-list');
+
+    let sessionLocations = [];
+
+    // Poblar el selector de categorías
+    const categories = Object.keys(locationsData);
+    categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+        categorySelect.appendChild(option);
+    });
+    const newOption = document.createElement('option');
+    newOption.value = 'new';
+    newOption.textContent = 'Crear nueva categoría...';
+    categorySelect.appendChild(newOption);
+
+    categorySelect.addEventListener('change', () => {
+        if (categorySelect.value === 'new') {
+            newCategoryInput.style.display = 'block';
+            newCategoryInput.required = true;
+        } else {
+            newCategoryInput.style.display = 'none';
+            newCategoryInput.required = false;
+        }
+    });
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const name = formData.get('name');
+        let category = formData.get('category');
+        if (category === 'new') {
+            category = formData.get('newCategory').toLowerCase();
+        }
+
+        const newLocation = {
+            name: name,
+            category: category,
+            lat: parseFloat(formData.get('lat')),
+            lng: parseFloat(formData.get('lng')),
+            description: formData.get('description'),
+            imageUrl: formData.get('imageUrl'),
+            url: formData.get('url')
+        };
+
+        sessionLocations.push(newLocation);
+        updateQueuedList();
+        form.reset();
+        categorySelect.value = categories[0]; // Reset select to first option
+        newCategoryInput.style.display = 'none';
+        newCategoryInput.required = false;
+        downloadBtn.disabled = false;
+        alert('¡Ubicación añadida a la cola!');
+    });
+
+    downloadBtn.addEventListener('click', () => {
+        if (sessionLocations.length === 0) {
+            alert('No hay ubicaciones en la cola para añadir.');
+            return;
+        }
+
+        if (confirm(`¿Estás seguro de que quieres añadir ${sessionLocations.length} ubicaciones al archivo JSON?`)) {
+            sessionLocations.forEach(loc => {
+                if (!locationsData[loc.category]) {
+                    locationsData[loc.category] = [];
+                }
+                locationsData[loc.category].push(loc);
+            });
+
+            const updatedJson = JSON.stringify(locationsData, null, 4);
+            const blob = new Blob([updatedJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'locations.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            alert('¡JSON actualizado! El archivo locations.json se ha descargado.');
+            sessionLocations = [];
+            updateQueuedList();
+            downloadBtn.disabled = true;
+        }
+    });
+
+    function updateQueuedList() {
+        queuedList.innerHTML = '';
+        sessionLocations.forEach(loc => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${loc.name} (${loc.category})`;
+            queuedList.appendChild(listItem);
+        });
+    }
+});
+</script>
+
+</body>
+</html>
