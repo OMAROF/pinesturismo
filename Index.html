@@ -64,8 +64,8 @@
 </head>
 <body class="font-sans">
 
-    <div class="container mx-auto p-4">
-        <header class="text-center mb-4 hidden">
+    <div class="container mx-auto p-4 h-screen flex flex-col">
+        <header class="text-center mb-4" style="display: none;">
             <h2 class="text-3xl font-bold text-gray-800">Tesoros de la peninsula</h2>
             <p class="text-gray-500 mt-1">Selecciona una categoría o busca por nombre.</p>
         </header>
@@ -85,25 +85,31 @@
                 </div>
                 <div class="flex-grow">
                     <h2 class="text-xl font-semibold text-center text-gray-700 mb-2">Categorías</h2>
-                    <div id="category-buttons" class="flex flex-col gap-3">
-                        <button onclick="toggleCategory('todos', this)" class="category-btn w-full px-4 py-2.5 bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-opacity-75 transition-all transform hover:scale-105">
-                            Mostrar Todos
-                        </button>
-                        <button onclick="toggleCategory('cenote', this)" class="category-btn w-full px-4 py-2.5 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-75 transition-all transform hover:scale-105">
-                            Cenotes
-                        </button>
-                        <button onclick="toggleCategory('arqueologia', this)" class="category-btn w-full px-4 py-2.5 bg-amber-600 text-white font-semibold rounded-lg shadow-md hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:ring-opacity-75 transition-all transform hover:scale-105">
-                            Zonas Arqueológicas
-                        </button>
-                        <button onclick="toggleCategory('hacienda', this)" class="category-btn w-full px-4 py-2.5 bg-emerald-600 text-white font-semibold rounded-lg shadow-md hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-opacity-75 transition-all transform hover:scale-105">
-                            Haciendas
-                        </button>
-                        <button onclick="toggleCategory('playa', this)" class="category-btn w-full px-4 py-2.5 bg-teal-500 text-white font-semibold rounded-lg shadow-md hover:bg-teal-600 focus:outline-none focus:ring-2 focus:ring-teal-300 focus:ring-opacity-75 transition-all transform hover:scale-105">
-                            Playas
-                        </button>
-                        <button onclick="toggleCategory('catedral', this)" class="category-btn w-full px-4 py-2.5 bg-indigo-500 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:ring-opacity-75 transition-all transform hover:scale-105">
-                            Catedrales
-                        </button>
+                    <div id="category-container" class="flex flex-wrap justify-center gap-x-4 gap-y-2">
+                        <label class="flex items-center space-x-3 cursor-pointer w-full border-b pb-2 mb-2">
+                            <input type="checkbox" id="todos" class="h-5 w-5 rounded border-gray-300 text-sky-600 focus:ring-sky-500">
+                            <span class="text-gray-800 font-medium">Mostrar Todos</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="category" value="cenote" class="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <span class="text-gray-700">Cenotes</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="category" value="arqueologia" class="h-5 w-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500">
+                            <span class="text-gray-700">Zonas Arqueológicas</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="category" value="hacienda" class="h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                            <span class="text-gray-700">Haciendas</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="category" value="playa" class="h-5 w-5 rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+                            <span class="text-gray-700">Playas</span>
+                        </label>
+                        <label class="flex items-center space-x-3 cursor-pointer">
+                            <input type="checkbox" name="category" value="catedral" class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            <span class="text-gray-700">Catedrales</span>
+                        </label>
                     </div>
                 </div>
             </aside>
@@ -113,17 +119,17 @@
 <script>
     // --- LÓGICA DEL MAPA ---
     let allLocations = [];
-    let activeCategories = []; // Array para categorías activas. Vacío significa "todas".
-
+    
     const map = L.map('map', {
         zoomControl: false // Desactiva el control de zoom por defecto
     }).setView([20.7, -89.0], 9);
 
-    // Añade el control de zoom en la posición inferior izquierda
     L.control.zoom({ position: 'bottomleft' }).addTo(map);
-    const categoryButtons = document.querySelectorAll('.category-btn');
+    
     const searchBox = document.getElementById('search-box');
     const suggestionsContainer = document.getElementById('suggestions-container');
+    const categoryCheckboxes = document.querySelectorAll('input[name="category"]');
+    const todosCheckbox = document.getElementById('todos');
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
@@ -133,45 +139,21 @@
     let markerLayer = L.markerClusterGroup({ removeOutsideVisibleBounds: false });
     map.addLayer(markerLayer);
 
-    function toggleCategory(category, clickedButton) {
-        const todosButton = document.querySelector("button[onclick*='todos']");
-        searchBox.value = ''; // Limpiar la caja de búsqueda
-
-        if (category === 'todos') {
-            activeCategories = [];
-            categoryButtons.forEach(btn => btn.classList.remove('active'));
-            clickedButton.classList.add('active');
-        } else {
-            // Si "Mostrar Todos" estaba activo, lo desactivamos para empezar una selección múltiple
-            if (todosButton.classList.contains('active')) {
-                todosButton.classList.remove('active');
-                activeCategories = []; 
+    function getSelectedCategories() {
+        const selected = [];
+        categoryCheckboxes.forEach(checkbox => {
+            if (checkbox.checked) {
+                selected.push(checkbox.value);
             }
-            
-            const index = activeCategories.indexOf(category);
-            if (index > -1) {
-                // La categoría ya está activa, la desactivamos
-                activeCategories.splice(index, 1);
-                clickedButton.classList.remove('active');
-            } else {
-                // La categoría no está activa, la activamos
-                activeCategories.push(category);
-                clickedButton.classList.add('active');
-            }
-
-            // Si no hay ninguna categoría seleccionada, activamos "Mostrar Todos"
-            if (activeCategories.length === 0) {
-                todosButton.classList.add('active');
-            }
-        }
-        
-        filterAndShowLocations();
-        updateSuggestions();
+        });
+        return selected;
     }
 
     function filterAndShowLocations() {
         const searchTerm = searchBox.value.toLowerCase();
+        const activeCategories = getSelectedCategories();
         
+        // Si ninguna categoría individual está seleccionada, mostramos todo.
         const categoryFiltered = activeCategories.length === 0
             ? allLocations
             : allLocations.filter(loc => activeCategories.includes(loc.category));
@@ -180,8 +162,6 @@
 
         markerLayer.clearLayers();
         if (searchFiltered.length === 0) {
-            // No restaurar la vista para que el usuario no pierda el zoom actual
-            // map.setView([20.7, -89.0], 9); 
             return;
         }
 
@@ -227,6 +207,7 @@
             return;
         }
 
+        const activeCategories = getSelectedCategories();
         const categoryFiltered = activeCategories.length === 0
             ? allLocations
             : allLocations.filter(loc => activeCategories.includes(loc.category));
@@ -250,7 +231,6 @@
         }
     }
 
-    // Cargar datos y luego inicializar el mapa
     document.addEventListener('DOMContentLoaded', () => {
         fetch('locations.json')
             .then(response => response.json())
@@ -260,17 +240,41 @@
                 searchBox.addEventListener('keyup', updateSuggestions);
                 searchBox.addEventListener('search', filterAndShowLocations);
 
+                categoryCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        const allChecked = [...categoryCheckboxes].every(c => c.checked);
+                        const someChecked = [...categoryCheckboxes].some(c => c.checked);
+                        
+                        todosCheckbox.indeterminate = someChecked && !allChecked;
+                        todosCheckbox.checked = allChecked;
+
+                        // Si no hay nada seleccionado, filtramos para mostrar todo
+                        if (!someChecked) {
+                            filterAndShowLocations(); // Llama a filter que usará allLocations
+                        } else {
+                            filterAndShowLocations();
+                        }
+                        updateSuggestions();
+                    });
+                });
+
+                todosCheckbox.addEventListener('change', () => {
+                    categoryCheckboxes.forEach(checkbox => {
+                        checkbox.checked = todosCheckbox.checked;
+                    });
+                    todosCheckbox.indeterminate = false;
+                    filterAndShowLocations();
+                    updateSuggestions();
+                });
+
                 window.addEventListener('click', (e) => {
                     if (!searchBox.contains(e.target) && !suggestionsContainer.contains(e.target)) {
                         suggestionsContainer.classList.add('hidden');
                     }
                 });
 
-                // Inicializar con "Mostrar Todos" activo
-                const todosButton = document.querySelector("button[onclick*='todos']");
-                if(todosButton) {
-                    toggleCategory('todos', todosButton);
-                }
+                // Por defecto, no mostrar ninguna categoría individualmente, pero sí todas en el mapa.
+                filterAndShowLocations();
                 
                 setTimeout(() => map.invalidateSize(), 100);
             })
